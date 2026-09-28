@@ -1,0 +1,2345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzBCM0Q0QSIvPgogIDxwYXRoIGQ9Ik04IDE2aDE2TTE2IDh2MTYiIHN0cm9rZT0iIzdFQzhCOCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjUuNSIgc3Ryb2tlPSIjRThGNEYxIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CaseBridge — Peer Medical Consultation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Caveat:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-signature: "Caveat", cursive;
+
+  --color-ink: #0b1f26;
+  --color-ink-soft: #2a4550;
+  --color-teal-deep: #0b3d4a;
+  --color-teal: #136f7a;
+  --color-teal-mid: #1a8a8f;
+  --color-mint: #7ec8b8;
+  --color-mint-soft: #c5e8df;
+  --color-sand: #f3efe6;
+  --color-sand-deep: #e6dfd0;
+  --color-coral: #c45c4a;
+  --color-surface: #faf8f4;
+  --color-panel: #ffffff;
+  --color-line: #d5ddd9;
+  --color-amber-bg: #fef3c7;
+  --color-amber-text: #78350f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, #c5e8df55, transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #e6dfd088, transparent),
+    linear-gradient(165deg, #faf8f4 0%, #eef5f3 45%, #e8f0ed 100%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+.animate-slide-in {
+  animation: slide-in-right 0.45s ease-out both;
+}
+
+.animate-toast {
+  animation: toast-in 0.4s ease-out both;
+}
+
+.animate-pulse {
+  animation: pulse-soft 1.5s ease-in-out infinite;
+}
+
+.signature {
+  font-family: var(--font-signature);
+  font-size: 1.75rem;
+  color: #1a3a5c;
+  line-height: 1;
+}
+
+.encrypted-block {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-soft);
+  background: repeating-linear-gradient(
+    -45deg,
+    #eef2f0,
+    #eef2f0 6px,
+    #e6ebe8 6px,
+    #e6ebe8 12px
+  );
+  border: 1px dashed var(--color-line);
+  border-radius: 6px;
+  padding: 0.65rem 0.75rem;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.shell-header {
+  border-bottom: 1px solid rgba(213, 221, 217, 0.8);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.shell-header-inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .shell-header-inner {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-teal-deep);
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.brand-link:hover .brand-title {
+  color: var(--color-teal);
+}
+
+.brand-sub {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.shell-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .shell-user {
+    gap: 1.25rem;
+  }
+}
+
+.shell-user-meta {
+  display: none;
+  text-align: right;
+}
+
+@media (min-width: 640px) {
+  .shell-user-meta {
+    display: block;
+  }
+}
+
+.shell-user-name {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.shell-user-detail {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.session-timer {
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  background: rgba(197, 232, 223, 0.6);
+  color: var(--color-teal-deep);
+}
+
+.session-timer.urgent {
+  background: rgba(196, 92, 74, 0.15);
+  color: var(--color-coral);
+}
+
+.shell-main {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .shell-main {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-teal-deep);
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 2.25rem;
+  }
+}
+
+.page-desc {
+  margin: 0.5rem 0 0;
+  max-width: 42rem;
+  color: var(--color-ink-soft);
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background: var(--color-teal-deep);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-teal);
+}
+
+.btn-secondary {
+  background: var(--color-panel);
+  border-color: var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-teal);
+  color: var(--color-teal-deep);
+}
+
+.btn-sm {
+  padding: 0.375rem 1rem;
+}
+
+.btn-logout {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-logout:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal-deep);
+}
+
+.login-wrap {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.login-grid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(rgba(11, 61, 74, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 61, 74, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.login-card-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.login-brand {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.login-brand-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-teal-deep);
+}
+
+@media (min-width: 640px) {
+  .login-brand-name {
+    font-size: 3rem;
+  }
+}
+
+.login-brand-tag {
+  margin: 0.75rem 0 0;
+  color: var(--color-ink-soft);
+}
+
+.panel {
+  border: 1px solid var(--color-line);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(11, 61, 74, 0.04);
+}
+
+@media (min-width: 640px) {
+  .panel {
+    padding: 2rem;
+  }
+}
+
+.panel-solid {
+  background: var(--color-panel);
+}
+
+.field {
+  display: block;
+  margin-top: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.field-input,
+.field-textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.375rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 0.625rem 0.75rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-input:focus,
+.field-textarea:focus,
+.search-input:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(126, 200, 184, 0.4);
+}
+
+.field-textarea {
+  resize: vertical;
+}
+
+.field-input:disabled,
+.field-textarea:disabled {
+  opacity: 0.7;
+}
+
+.error-text {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--color-coral);
+}
+
+.demo-hint {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-line);
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.demo-hint p {
+  margin: 0 0 0.5rem;
+}
+
+.demo-hint p:last-child {
+  margin-bottom: 0;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.category-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.category-card {
+  display: block;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: 1.25rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.category-card:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 4px 12px rgba(11, 61, 74, 0.05);
+}
+
+.category-card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-teal-deep);
+  transition: color 0.15s ease;
+}
+
+.category-card:hover .category-card-title {
+  color: var(--color-teal);
+}
+
+.category-card-blurb {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.category-card-cta {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-mint);
+}
+
+.toolbar-row {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .toolbar-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.link-teal {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-teal);
+}
+
+.link-teal:hover {
+  color: var(--color-teal-deep);
+}
+
+.search-input {
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+@media (min-width: 640px) {
+  .search-input {
+    max-width: 20rem;
+  }
+}
+
+.table-wrap {
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.table-head {
+  display: none;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-line);
+  background: rgba(243, 239, 230, 0.5);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+}
+
+@media (min-width: 640px) {
+  .table-head {
+    display: grid;
+  }
+}
+
+.table-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgba(213, 221, 217, 0.7);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.table-row:last-child {
+  border-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .table-row {
+    grid-template-columns: repeat(12, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.col-1 {
+  color: var(--color-ink-soft);
+}
+
+@media (min-width: 640px) {
+  .col-1 {
+    grid-column: span 1;
+  }
+  .col-4 {
+    grid-column: span 4;
+  }
+  .col-3 {
+    grid-column: span 3;
+  }
+}
+
+.col-name {
+  font-weight: 500;
+}
+
+.muted {
+  color: var(--color-ink-soft);
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1rem;
+}
+
+.pagination-label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.pagination-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.form-panel {
+  max-width: 42rem;
+}
+
+.file-drop {
+  margin-top: 0.375rem;
+  border-radius: 0.375rem;
+  border: 1px dashed var(--color-line);
+  background: rgba(243, 239, 230, 0.4);
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  margin: 0 auto;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.file-input::file-selector-button {
+  margin-right: 0.75rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: var(--color-teal-deep);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.file-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.file-list {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.awaiting-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-teal);
+}
+
+.toast {
+  position: fixed;
+  right: 1rem;
+  top: 5rem;
+  z-index: 50;
+  width: min(calc(100% - 2rem), 24rem);
+  border: 1px solid var(--color-mint);
+  background: var(--color-panel);
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(11, 61, 74, 0.1);
+}
+
+.toast-head {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.toast-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-teal-deep);
+}
+
+.toast-close {
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-soft);
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.toast-close:hover {
+  color: var(--color-ink);
+}
+
+.past-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.past-card {
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: 1.25rem;
+}
+
+.past-card-top {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-teal);
+}
+
+.status-pill {
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-completed {
+  background: var(--color-mint-soft);
+  color: var(--color-teal-deep);
+}
+
+.status-pending {
+  background: var(--color-sand-deep);
+  color: var(--color-ink-soft);
+}
+
+.dl-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .dl-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dl-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+}
+
+.dl-value {
+  margin: 0.25rem 0 0;
+  font-weight: 500;
+}
+
+.incoming-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.incoming-card {
+  display: block;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: 1.25rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.incoming-card:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 4px 12px rgba(11, 61, 74, 0.05);
+}
+
+.incoming-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.incoming-doctor {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-teal-deep);
+}
+
+.urgency-pill {
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.urgency-routine {
+  background: var(--color-sand-deep);
+  color: var(--color-ink-soft);
+}
+
+.urgency-urgent {
+  background: var(--color-amber-bg);
+  color: var(--color-amber-text);
+}
+
+.urgency-stat {
+  background: rgba(196, 92, 74, 0.15);
+  color: var(--color-coral);
+}
+
+.incoming-preview {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.incoming-meta {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.request-grid {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 48rem;
+}
+
+.request-grid.split {
+  max-width: none;
+}
+
+@media (min-width: 1024px) {
+  .request-grid.split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.request-section {
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .request-section {
+    padding: 2rem;
+  }
+}
+
+.diagnosis-section {
+  border-color: rgba(19, 111, 122, 0.3);
+  box-shadow: 0 4px 12px rgba(11, 61, 74, 0.05);
+}
+
+.request-section h2 {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-teal-deep);
+}
+
+.request-dl {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.request-dl dd {
+  margin: 0.25rem 0 0;
+}
+
+.request-dl .body-text {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.625;
+  white-space: pre-wrap;
+}
+
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-line);
+  background: rgba(243, 239, 230, 0.4);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.file-chip-icon {
+  color: var(--color-teal);
+}
+
+.accepted-note {
+  margin: 1.5rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-teal);
+}
+
+.sig-box {
+  margin-top: 1.25rem;
+  border-radius: 0.375rem;
+  border: 1px dashed var(--color-line);
+  background: rgba(243, 239, 230, 0.3);
+  padding: 1rem;
+}
+
+.sig-placeholder {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+.sent-box {
+  margin-top: 1.5rem;
+  border: 1px solid var(--color-mint);
+  background: rgba(197, 232, 223, 0.4);
+  padding: 1rem;
+}
+
+.sent-box p {
+  margin: 0;
+}
+
+.sent-box .sent-title {
+  font-weight: 500;
+  color: var(--color-teal-deep);
+}
+
+.sent-box .sent-body {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+(function () {
+  'use strict';
+
+  const SESSION_MS = 5 * 60 * 1000;
+  const STORAGE_KEY = 'casebridge-auth';
+  const PER_PAGE = 15;
+
+  const FIRST_NAMES = [
+    'James', 'Mary', 'Robert', 'Patricia', 'John', 'Jennifer', 'Michael', 'Linda',
+    'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica',
+    'Thomas', 'Sarah', 'Charles', 'Karen', 'Christopher', 'Nancy', 'Daniel', 'Lisa',
+    'Matthew', 'Betty', 'Anthony', 'Margaret', 'Mark', 'Sandra', 'Donald', 'Ashley',
+    'Steven', 'Kimberly', 'Paul', 'Emily', 'Andrew', 'Donna', 'Joshua', 'Michelle',
+    'Kenneth', 'Dorothy', 'Kevin', 'Carol', 'Brian', 'Amanda', 'George', 'Melissa',
+    'Timothy', 'Deborah', 'Ronald', 'Stephanie', 'Edward', 'Rebecca', 'Jason', 'Sharon',
+    'Jeffrey', 'Laura', 'Ryan', 'Cynthia', 'Jacob', 'Kathleen', 'Gary', 'Amy',
+    'Nicholas', 'Angela', 'Eric', 'Shirley', 'Jonathan', 'Anna', 'Stephen', 'Brenda',
+    'Larry', 'Pamela', 'Justin', 'Emma', 'Scott', 'Nicole', 'Brandon', 'Helen',
+    'Benjamin', 'Samantha', 'Samuel', 'Katherine', 'Raymond', 'Christine', 'Gregory', 'Debra',
+    'Frank', 'Rachel', 'Alexander', 'Carolyn', 'Patrick', 'Janet', 'Jack', 'Catherine',
+    'Dennis', 'Maria', 'Jerry', 'Heather', 'Tyler', 'Diane', 'Aaron', 'Ruth',
+    'Jose', 'Julie', 'Adam', 'Olivia', 'Nathan', 'Joyce', 'Henry', 'Virginia',
+  ];
+
+  const LAST_NAMES = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas',
+    'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White',
+    'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young',
+    'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+    'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell',
+    'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker',
+    'Cruz', 'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris', 'Morales', 'Murphy',
+    'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey',
+    'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson',
+    'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennett', 'Gray', 'Mendoza',
+    'Ruiz', 'Hughes', 'Price', 'Alvarez', 'Castillo', 'Sanders', 'Patel', 'Myers',
+  ];
+
+  const HOSPITALS = [
+    'St. Mary Medical Center',
+    'Riverside General',
+    'Northside Health',
+    'Summit Regional',
+    'Harborview Clinic',
+    'Cedar Valley Hospital',
+    'Metro University Medical',
+    'Lakeside Imaging Center',
+    'Pinecrest Health System',
+    'Westbrook Memorial',
+  ];
+
+  const CATEGORIES = [
+    'Radiology',
+    'Neurology',
+    'Pharmacology',
+    'Oncology',
+    'Dermatology',
+    'Cardiology',
+    'Orthopedics',
+    'Gastroenterology',
+    'Pulmonology',
+    'Endocrinology',
+  ];
+
+  const CATEGORY_BLURBS = {
+    Radiology: 'Imaging reads, DICOM review, and second opinions',
+    Neurology: 'CNS consults, stroke pathways, and neuro imaging',
+    Pharmacology: 'Dosing, interactions, and therapeutic alternatives',
+    Oncology: 'Staging support, regimen questions, and case review',
+    Dermatology: 'Lesion assessment and treatment pathways',
+    Cardiology: 'ECG, echo, and cardiac risk consultation',
+    Orthopedics: 'Musculoskeletal injury and surgical planning',
+    Gastroenterology: 'GI workups and procedure guidance',
+    Pulmonology: 'Respiratory imaging and airway management',
+    Endocrinology: 'Metabolic and hormone therapy consults',
+  };
+
+  const DOCTOR_PAST_REQUESTS = [
+    {
+      id: 'REQ-10482',
+      patientInsurance: 'HI-884721-03',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Elena Vargas',
+      category: 'Radiology',
+      date: '2026-09-12',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10391',
+      patientInsurance: 'HI-229104-17',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Marcus Chen',
+      category: 'Neurology',
+      date: '2026-08-28',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10255',
+      patientInsurance: 'HI-551903-44',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Priya Nair',
+      category: 'Oncology',
+      date: '2026-08-04',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10112',
+      patientInsurance: 'HI-773021-09',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Samuel Ortiz',
+      category: 'Radiology',
+      date: '2026-07-19',
+      status: 'Pending Review',
+    },
+    {
+      id: 'REQ-09984',
+      patientInsurance: 'HI-410288-62',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Hannah Blake',
+      category: 'Dermatology',
+      date: '2026-06-30',
+      status: 'Completed',
+    },
+  ];
+
+  const RADIOLOGIST_PAST_REQUESTS = [
+    {
+      id: 'REQ-11002',
+      patientInsurance: 'HI-992341-11',
+      requestingDoctor: 'Dr. Amelia Frost',
+      helperName: 'Dr. Sarah Kim',
+      category: 'Radiology',
+      date: '2026-09-20',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10944',
+      patientInsurance: 'HI-118203-55',
+      requestingDoctor: 'Dr. John Doe',
+      helperName: 'Dr. Sarah Kim',
+      category: 'Radiology',
+      date: '2026-09-08',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10871',
+      patientInsurance: 'HI-664190-28',
+      requestingDoctor: 'Dr. Carlos Mendes',
+      helperName: 'Dr. Sarah Kim',
+      category: 'Radiology',
+      date: '2026-08-22',
+      status: 'Completed',
+    },
+    {
+      id: 'REQ-10703',
+      patientInsurance: 'HI-330871-90',
+      requestingDoctor: 'Dr. Nina Patel',
+      helperName: 'Dr. Sarah Kim',
+      category: 'Radiology',
+      date: '2026-08-01',
+      status: 'Pending Review',
+    },
+  ];
+
+  const INCOMING_REQUESTS = [
+    {
+      id: 'INC-2201',
+      fromDoctor: 'Dr. John Doe',
+      patientInsurance: 'HI-448210-19',
+      category: 'Radiology',
+      generalRequest:
+        'Please review chest X-ray for suspected fracture after fall. Patient reports localized pain on inspiration.',
+      files: ['chest_pa.dcm', 'chest_lat.dcm', 'clinical_notes.pdf'],
+      submittedAt: '2026-09-28 14:22',
+      urgency: 'Urgent',
+    },
+    {
+      id: 'INC-2198',
+      fromDoctor: 'Dr. Amelia Frost',
+      patientInsurance: 'HI-771204-33',
+      category: 'Radiology',
+      generalRequest:
+        'MRI lumbar spine — evaluate for disc herniation. Chronic lower back pain with radiculopathy.',
+      files: ['lspine_t2.dcm', 'lspine_t1.dcm'],
+      submittedAt: '2026-09-28 11:05',
+      urgency: 'Routine',
+    },
+    {
+      id: 'INC-2194',
+      fromDoctor: 'Dr. Carlos Mendes',
+      patientInsurance: 'HI-205591-07',
+      category: 'Radiology',
+      generalRequest:
+        'CT abdomen/pelvis with contrast. Rule out appendicitis. WBC elevated, RLQ tenderness.',
+      files: ['ct_abd_series.zip', 'lab_panel.pdf'],
+      submittedAt: '2026-09-28 09:41',
+      urgency: 'STAT',
+    },
+    {
+      id: 'INC-2189',
+      fromDoctor: 'Dr. Nina Patel',
+      patientInsurance: 'HI-883012-64',
+      category: 'Radiology',
+      generalRequest:
+        'Mammography follow-up. BI-RADS 3 lesion on prior study. Please compare and recommend.',
+      files: ['mammo_cc_l.dcm', 'mammo_mlo_l.dcm', 'prior_report.pdf'],
+      submittedAt: '2026-09-27 16:18',
+      urgency: 'Routine',
+    },
+    {
+      id: 'INC-2185',
+      fromDoctor: 'Dr. Liam Okafor',
+      patientInsurance: 'HI-129984-42',
+      category: 'Radiology',
+      generalRequest:
+        'Brain CT without contrast. Acute headache, rule out intracranial hemorrhage.',
+      files: ['brain_nct.dcm'],
+      submittedAt: '2026-09-27 13:50',
+      urgency: 'STAT',
+    },
+    {
+      id: 'INC-2180',
+      fromDoctor: 'Dr. Sophie Laurent',
+      patientInsurance: 'HI-556701-88',
+      category: 'Radiology',
+      generalRequest:
+        'Wrist X-ray series. Suspected scaphoid fracture after sports injury.',
+      files: ['wrist_pa.dcm', 'wrist_oblique.dcm', 'wrist_lateral.dcm'],
+      submittedAt: '2026-09-27 10:12',
+      urgency: 'Urgent',
+    },
+    {
+      id: 'INC-2174',
+      fromDoctor: 'Dr. Henry Wu',
+      patientInsurance: 'HI-390112-25',
+      category: 'Radiology',
+      generalRequest:
+        'PET-CT for staging. Known primary lung nodule. Evaluate for metastatic disease.',
+      files: ['petct_fusion.dcm', 'oncology_referral.pdf'],
+      submittedAt: '2026-09-26 15:33',
+      urgency: 'Routine',
+    },
+    {
+      id: 'INC-2168',
+      fromDoctor: 'Dr. Grace Yamamoto',
+      patientInsurance: 'HI-614803-51',
+      category: 'Radiology',
+      generalRequest:
+        'Ultrasound RUQ. Evaluate gallbladder for stones. Postprandial pain.',
+      files: ['ruq_us.dcm', 'order_form.pdf'],
+      submittedAt: '2026-09-26 08:47',
+      urgency: 'Routine',
+    },
+  ];
+
+  const RADIOLOGIST_SIGNATURE = 'Dr. Sarah Kim, MD, DABR';
+
+  const specialistCache = {};
+
+  const state = {
+    user: null,
+    now: Date.now(),
+    specialistPage: 1,
+    specialistQuery: '',
+    newRequest: {
+      insurance: '',
+      request: '',
+      files: [],
+      submitted: false,
+      showDiagnosis: false,
+    },
+    radRequest: {
+      accepted: false,
+      diagnosis: '',
+      signed: false,
+      signature: '',
+      sent: false,
+      requestId: null,
+    },
+  };
+
+  let diagnosisTimer = null;
+  let tickInterval = null;
+  const appEl = document.getElementById('app');
+
+  function seededRandom(seed) {
+    let s = seed;
+    return function () {
+      s = (s * 16807) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+
+  function generateSpecialists(category, count) {
+    count = count || 1000;
+    if (specialistCache[category]) return specialistCache[category];
+    const rand = seededRandom(
+      category.split('').reduce(function (a, c) {
+        return a + c.charCodeAt(0);
+      }, 0) + 42,
+    );
+    const specialists = [];
+    for (let i = 0; i < count; i++) {
+      const first = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
+      const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
+      specialists.push({
+        id: i + 1,
+        name: 'Dr. ' + first + ' ' + last,
+        specialty: category,
+        hospital: HOSPITALS[Math.floor(rand() * HOSPITALS.length)],
+        yearsExperience: 3 + Math.floor(rand() * 35),
+      });
+    }
+    specialistCache[category] = specialists;
+    return specialists;
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatTimer(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function secondsRemaining() {
+    if (!state.user) return 0;
+    return Math.max(0, Math.ceil((SESSION_MS - (state.now - state.user.loginAt)) / 1000));
+  }
+
+  function parseStored() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.loginAt >= SESSION_MS) {
+        sessionStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem(STORAGE_KEY);
+    state.user = null;
+    if (tickInterval) {
+      clearInterval(tickInterval);
+      tickInterval = null;
+    }
+    if (diagnosisTimer) {
+      clearTimeout(diagnosisTimer);
+      diagnosisTimer = null;
+    }
+    navigate('#/');
+  }
+
+  function login(licenseNumber) {
+    const trimmed = licenseNumber.trim();
+    if (!trimmed) {
+      return { ok: false, error: 'Please enter your medical license number.' };
+    }
+    if (!/^\d/.test(trimmed)) {
+      return {
+        ok: false,
+        error:
+          'License number must begin with a digit. Use 1… for physicians, 2… for radiologists.',
+      };
+    }
+    const first = trimmed[0];
+    if (first !== '1' && first !== '2') {
+      return {
+        ok: false,
+        error: 'Demo access: license must start with 1 (physician) or 2 (radiologist).',
+      };
+    }
+    const next = {
+      licenseNumber: trimmed,
+      role: first === '1' ? 'doctor' : 'radiologist',
+      displayName: first === '1' ? 'Dr. John Doe' : 'Dr. Sarah Kim',
+      loginAt: Date.now(),
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    state.user = next;
+    state.now = Date.now();
+    startTicker();
+    return { ok: true };
+  }
+
+  function startTicker() {
+    if (tickInterval) clearInterval(tickInterval);
+    tickInterval = setInterval(function () {
+      state.now = Date.now();
+      if (state.user && state.now - state.user.loginAt >= SESSION_MS) {
+        logout();
+        return;
+      }
+      const timerEl = document.getElementById('session-timer');
+      if (timerEl && state.user) {
+        const remaining = secondsRemaining();
+        timerEl.textContent = 'Session ' + formatTimer(remaining);
+        if (remaining <= 60) timerEl.classList.add('urgent', 'animate-pulse');
+        else timerEl.classList.remove('urgent', 'animate-pulse');
+      }
+    }, 1000);
+  }
+
+  function getHashPath() {
+    let hash = window.location.hash || '#/';
+    if (hash.charAt(0) === '#') hash = hash.slice(1);
+    if (!hash || hash.charAt(0) !== '/') hash = '/' + hash;
+    return hash.split('?')[0];
+  }
+
+  function navigate(hash) {
+    if (window.location.hash === hash) {
+      render();
+    } else {
+      window.location.hash = hash;
+    }
+  }
+
+  function matchRoute(path) {
+    if (path === '/' || path === '') return { name: 'login' };
+    if (path === '/doctor') return { name: 'doctor-welcome' };
+    let m = path.match(/^\/doctor\/category\/(.+)$/);
+    if (m) return { name: 'specialist-list', category: decodeURIComponent(m[1]) };
+    m = path.match(/^\/doctor\/request\/(.+)$/);
+    if (m) return { name: 'new-request', category: decodeURIComponent(m[1]) };
+    if (path === '/doctor/past') return { name: 'doctor-past' };
+    if (path === '/radiologist') return { name: 'radiologist-dash' };
+    m = path.match(/^\/radiologist\/request\/(.+)$/);
+    if (m) return { name: 'radiologist-request', id: decodeURIComponent(m[1]) };
+    if (path === '/radiologist/past') return { name: 'radiologist-past' };
+    return { name: 'login' };
+  }
+
+  function requireAuth(role) {
+    if (!state.user) {
+      navigate('#/');
+      return false;
+    }
+    if (role && state.user.role !== role) {
+      navigate(state.user.role === 'doctor' ? '#/doctor' : '#/radiologist');
+      return false;
+    }
+    return true;
+  }
+
+  function appShell(subtitle, contentHtml) {
+    const user = state.user;
+    const remaining = secondsRemaining();
+    const urgent = remaining <= 60;
+    const homeHash = user && user.role === 'radiologist' ? '#/radiologist' : '#/doctor';
+    return (
+      '<div class="min-h-screen">' +
+      '<header class="shell-header">' +
+      '<div class="shell-header-inner">' +
+      '<a href="' +
+      homeHash +
+      '" class="brand-link">' +
+      '<p class="brand-title">CaseBridge</p>' +
+      '<p class="brand-sub">' +
+      escapeHtml(subtitle || 'Peer medical consultation') +
+      '</p>' +
+      '</a>' +
+      (user
+        ? '<div class="shell-user">' +
+          '<div class="shell-user-meta">' +
+          '<p class="shell-user-name">' +
+          escapeHtml(user.displayName) +
+          '</p>' +
+          '<p class="shell-user-detail">License · ' +
+          escapeHtml(user.licenseNumber) +
+          ' · ' +
+          (user.role === 'doctor' ? 'Physician' : 'Radiologist') +
+          '</p>' +
+          '</div>' +
+          '<div id="session-timer" class="session-timer' +
+          (urgent ? ' urgent animate-pulse' : '') +
+          '" title="Session auto-logout">Session ' +
+          formatTimer(remaining) +
+          '</div>' +
+          '<button type="button" class="btn-logout" data-action="logout">Log out</button>' +
+          '</div>'
+        : '') +
+      '</div>' +
+      '</header>' +
+      '<main class="shell-main">' +
+      contentHtml +
+      '</main>' +
+      '</div>'
+    );
+  }
+
+  function pageHeader(title, description, actionsHtml) {
+    return (
+      '<div class="page-header animate-fade-up">' +
+      '<div>' +
+      '<h1 class="page-title">' +
+      escapeHtml(title) +
+      '</h1>' +
+      (description ? '<p class="page-desc">' + escapeHtml(description) + '</p>' : '') +
+      '</div>' +
+      (actionsHtml ? '<div class="page-actions">' + actionsHtml + '</div>' : '') +
+      '</div>'
+    );
+  }
+
+  function pastRequestList(requests) {
+    return (
+      '<div class="past-list">' +
+      requests
+        .map(function (req, i) {
+          const statusClass =
+            req.status === 'Completed' ? 'status-completed' : 'status-pending';
+          return (
+            '<article class="past-card animate-fade-up" style="animation-delay:' +
+            i * 40 +
+            'ms">' +
+            '<div class="past-card-top">' +
+            '<div>' +
+            '<p class="eyebrow">' +
+            escapeHtml(req.id) +
+            ' · ' +
+            escapeHtml(req.category) +
+            '</p>' +
+            '<p class="muted text-sm mt-3" style="margin-top:0.25rem">' +
+            escapeHtml(req.date) +
+            '</p>' +
+            '</div>' +
+            '<span class="status-pill ' +
+            statusClass +
+            '">' +
+            escapeHtml(req.status) +
+            '</span>' +
+            '</div>' +
+            '<dl class="dl-grid">' +
+            '<div><dt class="dl-label">Patient health insurance</dt><dd class="dl-value">' +
+            escapeHtml(req.patientInsurance) +
+            '</dd></div>' +
+            '<div><dt class="dl-label">Requesting physician</dt><dd class="dl-value">' +
+            escapeHtml(req.requestingDoctor) +
+            '</dd></div>' +
+            '<div><dt class="dl-label">Consulting specialist</dt><dd class="dl-value">' +
+            escapeHtml(req.helperName) +
+            '</dd></div>' +
+            '</dl>' +
+            '<div class="mt-6">' +
+            '<p class="dl-label" style="margin-bottom:0.375rem">Clinical details &amp; attachments</p>' +
+            '<div class="encrypted-block">ENCRYPTED FOR PRIVACY PLEASE ASK YOUR HOSPITAL ADMINISTRATION FOR ACCESS</div>' +
+            '</div>' +
+            '</article>'
+          );
+        })
+        .join('') +
+      '</div>'
+    );
+  }
+
+  function renderLogin() {
+    if (state.user) {
+      navigate(state.user.role === 'doctor' ? '#/doctor' : '#/radiologist');
+      return;
+    }
+    appEl.innerHTML =
+      '<div class="login-wrap">' +
+      '<div class="login-grid"></div>' +
+      '<div class="login-card-wrap animate-fade-up">' +
+      '<div class="login-brand">' +
+      '<p class="login-brand-name">CaseBridge</p>' +
+      '<p class="login-brand-tag">Secure peer consultation for licensed clinicians</p>' +
+      '</div>' +
+      '<form id="login-form" class="panel">' +
+      '<h1 class="page-title" style="font-size:1.5rem">Clinician login</h1>' +
+      '<p class="page-desc" style="margin-top:0.5rem">Enter your medical license number to continue. Sessions expire after 5 minutes.</p>' +
+      '<label class="field">' +
+      '<span class="field-label">License number</span>' +
+      '<input id="license-input" type="text" inputmode="numeric" autocomplete="username" placeholder="e.g. 1847291 or 2847291" class="field-input" />' +
+      '</label>' +
+      '<p id="login-error" class="error-text hidden" role="alert"></p>' +
+      '<button type="submit" class="btn btn-primary w-full mt-6">Sign in</button>' +
+      '<div class="demo-hint">' +
+      '<p><span class="font-semibold" style="color:var(--color-teal-deep)">Demo:</span> license starting with <span class="mono">1</span> → physician (Dr. John Doe)</p>' +
+      '<p>License starting with <span class="mono">2</span> → radiologist (Dr. Sarah Kim)</p>' +
+      '</div>' +
+      '</form>' +
+      '</div>' +
+      '</div>';
+
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const license = document.getElementById('license-input').value;
+      const result = login(license);
+      const errEl = document.getElementById('login-error');
+      if (!result.ok) {
+        errEl.textContent = result.error;
+        errEl.classList.remove('hidden');
+        return;
+      }
+      navigate(state.user.role === 'doctor' ? '#/doctor' : '#/radiologist');
+    });
+
+    document.getElementById('license-input').addEventListener('input', function () {
+      const errEl = document.getElementById('login-error');
+      errEl.classList.add('hidden');
+      errEl.textContent = '';
+    });
+  }
+
+  function renderDoctorWelcome() {
+    if (!requireAuth('doctor')) return;
+    const cards = CATEGORIES.map(function (category, i) {
+      return (
+        '<a href="#/doctor/category/' +
+        encodeURIComponent(category) +
+        '" class="category-card animate-fade-up" style="animation-delay:' +
+        i * 35 +
+        'ms">' +
+        '<p class="category-card-title">' +
+        escapeHtml(category) +
+        '</p>' +
+        '<p class="category-card-blurb">' +
+        escapeHtml(CATEGORY_BLURBS[category]) +
+        '</p>' +
+        '<p class="category-card-cta">Open directory →</p>' +
+        '</a>'
+      );
+    }).join('');
+
+    appEl.innerHTML = appShell(
+      'Physician workspace',
+      pageHeader(
+        'Welcome, ' + state.user.displayName,
+        'Select a specialty category to find consulting physicians, open a new request, or review past consultations.',
+        '<a href="#/doctor/past" class="btn btn-secondary">Past Requests</a>',
+      ) +
+        '<div class="category-grid">' +
+        cards +
+        '</div>',
+    );
+    bindShellActions();
+  }
+
+  function renderSpecialistList(category) {
+    if (!requireAuth('doctor')) return;
+    const specialists = generateSpecialists(category, 1000);
+    const q = state.specialistQuery.trim().toLowerCase();
+    const filtered = !q
+      ? specialists
+      : specialists.filter(function (s) {
+          return (
+            s.name.toLowerCase().indexOf(q) !== -1 ||
+            s.hospital.toLowerCase().indexOf(q) !== -1
+          );
+        });
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    const currentPage = Math.min(state.specialistPage, totalPages);
+    const slice = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+    const rows = slice
+      .map(function (s, i) {
+        return (
+          '<li class="table-row animate-fade-up" style="animation-delay:' +
+          i * 20 +
+          'ms">' +
+          '<span class="col-1">' +
+          s.id +
+          '</span>' +
+          '<span class="col-4 col-name">' +
+          escapeHtml(s.name) +
+          '</span>' +
+          '<span class="col-4 muted">' +
+          escapeHtml(s.hospital) +
+          '</span>' +
+          '<span class="col-3 muted">' +
+          s.yearsExperience +
+          ' years · ' +
+          escapeHtml(s.specialty) +
+          '</span>' +
+          '</li>'
+        );
+      })
+      .join('');
+
+    appEl.innerHTML = appShell(
+      category + ' directory',
+      pageHeader(
+        category,
+        filtered.length.toLocaleString() +
+          ' consulting specialists available. Browse the directory or open a new consultation request.',
+        '<a href="#/doctor/request/' +
+          encodeURIComponent(category) +
+          '" class="btn btn-primary">New Request</a>' +
+          '<a href="#/doctor/past" class="btn btn-secondary">Past Requests</a>',
+      ) +
+        '<div class="toolbar-row">' +
+        '<a href="#/doctor" class="link-teal">← All categories</a>' +
+        '<input type="search" id="specialist-search" class="search-input" placeholder="Search by name or hospital" value="' +
+        escapeHtml(state.specialistQuery) +
+        '" />' +
+        '</div>' +
+        '<div class="table-wrap">' +
+        '<div class="table-head">' +
+        '<span class="col-1">#</span><span class="col-4">Physician</span><span class="col-4">Hospital</span><span class="col-3">Experience</span>' +
+        '</div>' +
+        '<ul class="table-list">' +
+        rows +
+        '</ul>' +
+        '</div>' +
+        '<div class="pagination">' +
+        '<p class="pagination-label">Page ' +
+        currentPage +
+        ' of ' +
+        totalPages +
+        '</p>' +
+        '<div class="pagination-btns">' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-action="prev-page"' +
+        (currentPage <= 1 ? ' disabled' : '') +
+        '>Previous</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-action="next-page"' +
+        (currentPage >= totalPages ? ' disabled' : '') +
+        '>Next</button>' +
+        '</div>' +
+        '</div>',
+    );
+    bindShellActions();
+
+    document.getElementById('specialist-search').addEventListener('input', function (e) {
+      state.specialistQuery = e.target.value;
+      state.specialistPage = 1;
+      renderSpecialistList(category);
+      const input = document.getElementById('specialist-search');
+      if (input) {
+        input.focus();
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+      }
+    });
+
+    const prev = appEl.querySelector('[data-action="prev-page"]');
+    const next = appEl.querySelector('[data-action="next-page"]');
+    if (prev) {
+      prev.addEventListener('click', function () {
+        state.specialistPage = Math.max(1, currentPage - 1);
+        renderSpecialistList(category);
+      });
+    }
+    if (next) {
+      next.addEventListener('click', function () {
+        state.specialistPage = Math.min(totalPages, currentPage + 1);
+        renderSpecialistList(category);
+      });
+    }
+  }
+
+  function renderNewRequest(category) {
+    if (!requireAuth('doctor')) return;
+    const nr = state.newRequest;
+    const awaiting = nr.submitted && !nr.showDiagnosis;
+
+    appEl.innerHTML = appShell(
+      'New ' + category + ' request',
+      pageHeader(
+        'Request help',
+        'Submit a consultation request to the ' +
+          category +
+          ' network. Attach DICOM studies, images, or supporting documents.',
+        '<a href="#/doctor/category/' +
+          encodeURIComponent(category) +
+          '" class="btn btn-secondary">Back to directory</a>',
+      ) +
+        '<form id="new-request-form" class="panel panel-solid form-panel animate-fade-up">' +
+        '<label class="field" style="margin-top:0">' +
+        '<span class="field-label">Patient health insurance number</span>' +
+        '<input id="nr-insurance" required class="field-input" placeholder="e.g. HI-448210-19" value="' +
+        escapeHtml(nr.insurance) +
+        '" />' +
+        '</label>' +
+        '<label class="field">' +
+        '<span class="field-label">General request</span>' +
+        '<textarea id="nr-request" required rows="5" class="field-textarea" placeholder="Describe the clinical question, relevant history, and what you need reviewed…">' +
+        escapeHtml(nr.request) +
+        '</textarea>' +
+        '</label>' +
+        '<label class="field">' +
+        '<span class="field-label">File share — DICOM / images / other</span>' +
+        '<div class="file-drop">' +
+        '<input id="nr-files" type="file" multiple accept=".dcm,.dicom,image/*,.pdf,.zip,.nii,.nii.gz" class="file-input" />' +
+        '<p class="file-hint">Accepted: DICOM (.dcm), images, PDF, ZIP, NIfTI</p>' +
+        '<ul id="nr-file-list" class="file-list"></ul>' +
+        '</div>' +
+        '</label>' +
+        '<div class="form-actions">' +
+        '<button type="submit" class="btn btn-primary" id="nr-submit"' +
+        (awaiting ? ' disabled' : '') +
+        '>' +
+        (awaiting ? 'Awaiting specialist…' : 'Submit request') +
+        '</button>' +
+        '<a href="#/doctor/category/' +
+        encodeURIComponent(category) +
+        '" class="btn btn-secondary">Cancel</a>' +
+        '</div>' +
+        (awaiting
+          ? '<p class="awaiting-text animate-pulse mt-3">Request sent. Waiting for specialist response…</p>'
+          : '') +
+        '</form>' +
+        (nr.showDiagnosis
+          ? '<div class="toast animate-toast" id="diagnosis-toast">' +
+            '<div class="toast-head">' +
+            '<p class="toast-title">Specialist response received</p>' +
+            '<button type="button" class="toast-close" data-action="close-toast" aria-label="Dismiss">✕</button>' +
+            '</div>' +
+            '<p class="text-sm"><span class="font-semibold">Diagnosis:</span> Broken bone</p>' +
+            '<p class="text-xs uppercase tracking-wide muted mt-3">Signed by</p>' +
+            '<p class="signature mt-3" style="margin-top:0.25rem">' +
+            escapeHtml(RADIOLOGIST_SIGNATURE) +
+            '</p>' +
+            '<p class="text-xs muted mt-3" style="margin-top:0.25rem">Demo notification · not a real clinical report</p>' +
+            '</div>'
+          : ''),
+    );
+    bindShellActions();
+
+    const fileList = document.getElementById('nr-file-list');
+    function refreshFiles(files) {
+      nr.files = files;
+      fileList.innerHTML = files
+        .map(function (f) {
+          return (
+            '<li>' +
+            escapeHtml(f.name) +
+            ' <span class="muted">(' +
+            Math.round(f.size / 1024) +
+            ' KB)</span></li>'
+          );
+        })
+        .join('');
+    }
+    if (nr.files && nr.files.length) refreshFiles(nr.files);
+
+    document.getElementById('nr-files').addEventListener('change', function (e) {
+      refreshFiles(Array.prototype.slice.call(e.target.files || []));
+    });
+
+    document.getElementById('nr-insurance').addEventListener('input', function (e) {
+      nr.insurance = e.target.value;
+    });
+    document.getElementById('nr-request').addEventListener('input', function (e) {
+      nr.request = e.target.value;
+    });
+
+    document.getElementById('new-request-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const insurance = document.getElementById('nr-insurance').value.trim();
+      const request = document.getElementById('nr-request').value.trim();
+      if (!insurance || !request) return;
+      nr.insurance = insurance;
+      nr.request = request;
+      nr.submitted = true;
+      nr.showDiagnosis = false;
+      if (diagnosisTimer) clearTimeout(diagnosisTimer);
+      diagnosisTimer = setTimeout(function () {
+        nr.showDiagnosis = true;
+        renderNewRequest(category);
+      }, 5000);
+      renderNewRequest(category);
+    });
+
+    const closeToast = appEl.querySelector('[data-action="close-toast"]');
+    if (closeToast) {
+      closeToast.addEventListener('click', function () {
+        nr.showDiagnosis = false;
+        renderNewRequest(category);
+      });
+    }
+  }
+
+  function renderDoctorPast() {
+    if (!requireAuth('doctor')) return;
+    appEl.innerHTML = appShell(
+      'Past consultations',
+      pageHeader(
+        'Past Requests',
+        'Visible fields are limited for privacy. Full clinical content requires hospital administration clearance.',
+        '<a href="#/doctor" class="btn btn-secondary">Back to categories</a>',
+      ) + pastRequestList(DOCTOR_PAST_REQUESTS),
+    );
+    bindShellActions();
+  }
+
+  function urgencyClass(urgency) {
+    if (urgency === 'STAT') return 'urgency-stat';
+    if (urgency === 'Urgent') return 'urgency-urgent';
+    return 'urgency-routine';
+  }
+
+  function renderRadiologistDash() {
+    if (!requireAuth('radiologist')) return;
+    const items = INCOMING_REQUESTS.map(function (req, i) {
+      return (
+        '<li class="animate-fade-up" style="animation-delay:' +
+        i * 40 +
+        'ms">' +
+        '<a href="#/radiologist/request/' +
+        encodeURIComponent(req.id) +
+        '" class="incoming-card">' +
+        '<div class="incoming-top">' +
+        '<div>' +
+        '<p class="eyebrow">' +
+        escapeHtml(req.id) +
+        ' · ' +
+        escapeHtml(req.category) +
+        '</p>' +
+        '<p class="incoming-doctor">' +
+        escapeHtml(req.fromDoctor) +
+        '</p>' +
+        '</div>' +
+        '<span class="urgency-pill ' +
+        urgencyClass(req.urgency) +
+        '">' +
+        escapeHtml(req.urgency) +
+        '</span>' +
+        '</div>' +
+        '<p class="incoming-preview">' +
+        escapeHtml(req.generalRequest) +
+        '</p>' +
+        '<p class="incoming-meta">Insurance ' +
+        escapeHtml(req.patientInsurance) +
+        ' · Submitted ' +
+        escapeHtml(req.submittedAt) +
+        ' · ' +
+        req.files.length +
+        ' file' +
+        (req.files.length === 1 ? '' : 's') +
+        '</p>' +
+        '</a>' +
+        '</li>'
+      );
+    }).join('');
+
+    appEl.innerHTML = appShell(
+      'Radiologist workspace',
+      pageHeader(
+        'Incoming consults',
+        'Select a request to review the referring physician’s form. Accept to open the diagnosis panel.',
+        '<a href="#/radiologist/past" class="btn btn-secondary">Past Requests</a>',
+      ) +
+        '<ul class="incoming-list">' +
+        items +
+        '</ul>',
+    );
+    bindShellActions();
+  }
+
+  function renderRadiologistRequest(requestId) {
+    if (!requireAuth('radiologist')) return;
+    const request = INCOMING_REQUESTS.find(function (r) {
+      return r.id === requestId;
+    });
+
+    if (!request) {
+      appEl.innerHTML = appShell(
+        'Request not found',
+        pageHeader('Request not found', 'This consult may have been closed.') +
+          '<a href="#/radiologist" class="btn btn-secondary">Back to queue</a>',
+      );
+      bindShellActions();
+      return;
+    }
+
+    if (state.radRequest.requestId !== requestId) {
+      state.radRequest = {
+        accepted: false,
+        diagnosis: '',
+        signed: false,
+        signature: '',
+        sent: false,
+        requestId: requestId,
+      };
+    }
+    const rr = state.radRequest;
+
+    const filesHtml = request.files
+      .map(function (f) {
+        return (
+          '<div class="file-chip"><span class="file-chip-icon">▣</span> ' +
+          escapeHtml(f) +
+          '</div>'
+        );
+      })
+      .join('');
+
+    let diagnosisPanel = '';
+    if (rr.accepted) {
+      diagnosisPanel =
+        '<section class="request-section diagnosis-section animate-slide-in">' +
+        '<h2>Diagnosis &amp; signature</h2>' +
+        '<p class="page-desc" style="margin-top:0.5rem">Write your findings, sign, then send the response to the referring physician.</p>' +
+        '<label class="field">' +
+        '<span class="field-label">Diagnosis</span>' +
+        '<textarea id="rad-diagnosis" rows="8" class="field-textarea" placeholder="Enter your diagnostic impression and recommendations…"' +
+        (rr.sent ? ' disabled' : '') +
+        '>' +
+        escapeHtml(rr.diagnosis) +
+        '</textarea>' +
+        '</label>' +
+        '<div class="sig-box">' +
+        '<p class="dl-label">Signature</p>' +
+        (rr.signature
+          ? '<p class="signature mt-3" style="margin-top:0.5rem">' +
+            escapeHtml(rr.signature) +
+            '</p>'
+          : '<p class="sig-placeholder">Not signed yet</p>') +
+        '</div>' +
+        (!rr.sent
+          ? '<div class="form-actions mt-6">' +
+            '<button type="button" class="btn btn-secondary" data-action="sign"' +
+            (!rr.diagnosis.trim() ? ' disabled' : '') +
+            '>Sign</button>' +
+            '<button type="button" class="btn btn-primary" data-action="send"' +
+            (!rr.signed || !rr.diagnosis.trim() ? ' disabled' : '') +
+            '>Send</button>' +
+            '</div>'
+          : '<div class="sent-box">' +
+            '<p class="sent-title">Response sent</p>' +
+            '<p class="sent-body">Your signed diagnosis has been delivered to ' +
+            escapeHtml(request.fromDoctor) +
+            '.</p>' +
+            '<a href="#/radiologist" class="btn btn-secondary btn-sm mt-3">Return to queue</a>' +
+            '</div>') +
+        '</section>';
+    }
+
+    appEl.innerHTML = appShell(
+      'Consult ' + request.id,
+      pageHeader(
+        'Help request',
+        'Review the referring physician’s submission. Accept to draft and sign your diagnosis.',
+        '<a href="#/radiologist" class="btn btn-secondary">Back to queue</a>',
+      ) +
+        '<div class="request-grid' +
+        (rr.accepted ? ' split' : '') +
+        '">' +
+        '<section class="request-section animate-fade-up">' +
+        '<p class="eyebrow">From ' +
+        escapeHtml(request.fromDoctor) +
+        '</p>' +
+        '<h2>Consultation form</h2>' +
+        '<dl class="request-dl">' +
+        '<div><dt class="dl-label">Patient health insurance number</dt><dd class="dl-value">' +
+        escapeHtml(request.patientInsurance) +
+        '</dd></div>' +
+        '<div><dt class="dl-label">Category</dt><dd class="dl-value">' +
+        escapeHtml(request.category) +
+        '</dd></div>' +
+        '<div><dt class="dl-label">General request</dt><dd class="body-text">' +
+        escapeHtml(request.generalRequest) +
+        '</dd></div>' +
+        '<div><dt class="dl-label">Attached files</dt><dd style="margin-top:0.5rem">' +
+        filesHtml +
+        '</dd></div>' +
+        '</dl>' +
+        (!rr.accepted
+          ? '<button type="button" class="btn btn-primary mt-8" data-action="accept">Accept request</button>'
+          : '<p class="accepted-note">Request accepted — complete your diagnosis in the panel beside this form.</p>') +
+        '</section>' +
+        diagnosisPanel +
+        '</div>',
+    );
+    bindShellActions();
+
+    const acceptBtn = appEl.querySelector('[data-action="accept"]');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', function () {
+        rr.accepted = true;
+        renderRadiologistRequest(requestId);
+      });
+    }
+
+    const diag = document.getElementById('rad-diagnosis');
+    if (diag) {
+      diag.addEventListener('input', function (e) {
+        rr.diagnosis = e.target.value;
+        if (rr.signed && !rr.diagnosis.trim()) {
+          rr.signed = false;
+          rr.signature = '';
+        }
+        const signBtn = appEl.querySelector('[data-action="sign"]');
+        const sendBtn = appEl.querySelector('[data-action="send"]');
+        if (signBtn) signBtn.disabled = !rr.diagnosis.trim();
+        if (sendBtn) sendBtn.disabled = !rr.signed || !rr.diagnosis.trim();
+      });
+    }
+
+    const signBtn = appEl.querySelector('[data-action="sign"]');
+    if (signBtn) {
+      signBtn.addEventListener('click', function () {
+        if (!rr.diagnosis.trim()) return;
+        rr.signature = RADIOLOGIST_SIGNATURE;
+        rr.signed = true;
+        renderRadiologistRequest(requestId);
+      });
+    }
+
+    const sendBtn = appEl.querySelector('[data-action="send"]');
+    if (sendBtn) {
+      sendBtn.addEventListener('click', function () {
+        if (!rr.diagnosis.trim() || !rr.signed) return;
+        rr.sent = true;
+        renderRadiologistRequest(requestId);
+      });
+    }
+  }
+
+  function renderRadiologistPast() {
+    if (!requireAuth('radiologist')) return;
+    appEl.innerHTML = appShell(
+      'Past consultations',
+      pageHeader(
+        'Past Requests',
+        'Visible fields are limited for privacy. Full clinical content requires hospital administration clearance.',
+        '<a href="#/radiologist" class="btn btn-secondary">Back to queue</a>',
+      ) + pastRequestList(RADIOLOGIST_PAST_REQUESTS),
+    );
+    bindShellActions();
+  }
+
+  function bindShellActions() {
+    const logoutBtn = appEl.querySelector('[data-action="logout"]');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function () {
+        logout();
+      });
+    }
+  }
+
+  function render() {
+    const route = matchRoute(getHashPath());
+
+    if (route.name === 'login') {
+      renderLogin();
+      return;
+    }
+
+    if (route.name === 'doctor-welcome') {
+      state.specialistPage = 1;
+      state.specialistQuery = '';
+      renderDoctorWelcome();
+      return;
+    }
+
+    if (route.name === 'specialist-list') {
+      if (
+        !state._lastCategory ||
+        state._lastCategory !== route.category
+      ) {
+        state.specialistPage = 1;
+        state.specialistQuery = '';
+        state._lastCategory = route.category;
+      }
+      renderSpecialistList(route.category);
+      return;
+    }
+
+    if (route.name === 'new-request') {
+      if (state._lastRequestCategory !== route.category) {
+        state.newRequest = {
+          insurance: '',
+          request: '',
+          files: [],
+          submitted: false,
+          showDiagnosis: false,
+        };
+        if (diagnosisTimer) {
+          clearTimeout(diagnosisTimer);
+          diagnosisTimer = null;
+        }
+        state._lastRequestCategory = route.category;
+      }
+      renderNewRequest(route.category);
+      return;
+    }
+
+    if (route.name === 'doctor-past') {
+      renderDoctorPast();
+      return;
+    }
+
+    if (route.name === 'radiologist-dash') {
+      renderRadiologistDash();
+      return;
+    }
+
+    if (route.name === 'radiologist-request') {
+      renderRadiologistRequest(route.id);
+      return;
+    }
+
+    if (route.name === 'radiologist-past') {
+      renderRadiologistPast();
+      return;
+    }
+
+    navigate('#/');
+  }
+
+  state.user = parseStored();
+  if (state.user) startTicker();
+
+  window.addEventListener('hashchange', render);
+
+  if (!window.location.hash || window.location.hash === '#') {
+    window.location.hash = '#/';
+  } else {
+    render();
+  }
+})();
+
+    </script>
+  </body>
+</html>
