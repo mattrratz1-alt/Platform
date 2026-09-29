@@ -1022,6 +1022,30 @@ button {
   color: var(--color-teal);
 }
 
+.imaging-preview {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-ink);
+}
+
+.imaging-preview-img {
+  display: block;
+  margin: 0 auto;
+  max-height: 28rem;
+  width: 100%;
+  object-fit: contain;
+}
+
+.imaging-preview-caption {
+  border-top: 1px solid rgba(213, 221, 217, 0.4);
+  background: rgba(11, 61, 74, 0.9);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--color-mint-soft);
+}
+
 .accepted-note {
   margin: 1.5rem 0 0;
   font-size: 0.875rem;
@@ -1114,9 +1138,17 @@ button {
 (function () {
   'use strict';
 
-  const SESSION_MS = 5 * 60 * 1000;
+  const INACTIVITY_MS = 5 * 60 * 1000;
   const STORAGE_KEY = 'casebridge-auth';
   const PER_PAGE = 15;
+  const ACTIVITY_EVENTS = [
+    'mousemove',
+    'mousedown',
+    'keydown',
+    'scroll',
+    'touchstart',
+    'click',
+  ];
 
   const FIRST_NAMES = [
     'James', 'Mary', 'Robert', 'Patricia', 'John', 'Jennifer', 'Michael', 'Linda',
@@ -1446,7 +1478,14 @@ button {
 
   function secondsRemaining() {
     if (!state.user) return 0;
-    return Math.max(0, Math.ceil((SESSION_MS - (state.now - state.user.loginAt)) / 1000));
+    return Math.max(
+      0,
+      Math.ceil((INACTIVITY_MS - (state.now - state.user.lastActiveAt)) / 1000),
+    );
+  }
+
+  function persistUser(user) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }
 
   function parseStored() {
@@ -1454,11 +1493,17 @@ button {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (Date.now() - parsed.loginAt >= SESSION_MS) {
+      const lastActiveAt = parsed.lastActiveAt != null ? parsed.lastActiveAt : parsed.loginAt || 0;
+      if (!lastActiveAt || Date.now() - lastActiveAt >= INACTIVITY_MS) {
         sessionStorage.removeItem(STORAGE_KEY);
         return null;
       }
-      return parsed;
+      return {
+        licenseNumber: parsed.licenseNumber,
+        role: parsed.role,
+        displayName: parsed.displayName,
+        lastActiveAt: lastActiveAt,
+      };
     } catch (e) {
       return null;
     }
@@ -1467,6 +1512,7 @@ button {
   function logout() {
     sessionStorage.removeItem(STORAGE_KEY);
     state.user = null;
+    stopActivityTracking();
     if (tickInterval) {
       clearInterval(tickInterval);
       tickInterval = null;
@@ -1476,6 +1522,40 @@ button {
       diagnosisTimer = null;
     }
     navigate('#/');
+  }
+
+  function touchActivity() {
+    if (!state.user) return;
+    const next = Object.assign({}, state.user, { lastActiveAt: Date.now() });
+    persistUser(next);
+    state.user = next;
+    state.now = Date.now();
+  }
+
+  let activityThrottleUntil = 0;
+  let activityTracking = false;
+
+  function onActivity() {
+    const t = Date.now();
+    if (t < activityThrottleUntil) return;
+    activityThrottleUntil = t + 1000;
+    touchActivity();
+  }
+
+  function startActivityTracking() {
+    if (activityTracking) return;
+    activityTracking = true;
+    ACTIVITY_EVENTS.forEach(function (event) {
+      window.addEventListener(event, onActivity, { passive: true });
+    });
+  }
+
+  function stopActivityTracking() {
+    if (!activityTracking) return;
+    activityTracking = false;
+    ACTIVITY_EVENTS.forEach(function (event) {
+      window.removeEventListener(event, onActivity);
+    });
   }
 
   function login(licenseNumber) {
@@ -1501,12 +1581,13 @@ button {
       licenseNumber: trimmed,
       role: first === '1' ? 'doctor' : 'radiologist',
       displayName: first === '1' ? 'Dr. John Doe' : 'Dr. Sarah Kim',
-      loginAt: Date.now(),
+      lastActiveAt: Date.now(),
     };
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    persistUser(next);
     state.user = next;
     state.now = Date.now();
     startTicker();
+    startActivityTracking();
     return { ok: true };
   }
 
@@ -1514,14 +1595,14 @@ button {
     if (tickInterval) clearInterval(tickInterval);
     tickInterval = setInterval(function () {
       state.now = Date.now();
-      if (state.user && state.now - state.user.loginAt >= SESSION_MS) {
+      if (state.user && state.now - state.user.lastActiveAt >= INACTIVITY_MS) {
         logout();
         return;
       }
       const timerEl = document.getElementById('session-timer');
       if (timerEl && state.user) {
         const remaining = secondsRemaining();
-        timerEl.textContent = 'Session ' + formatTimer(remaining);
+        timerEl.textContent = 'Idle ' + formatTimer(remaining);
         if (remaining <= 60) timerEl.classList.add('urgent', 'animate-pulse');
         else timerEl.classList.remove('urgent', 'animate-pulse');
       }
@@ -1601,7 +1682,7 @@ button {
           '</div>' +
           '<div id="session-timer" class="session-timer' +
           (urgent ? ' urgent animate-pulse' : '') +
-          '" title="Session auto-logout">Session ' +
+          '" title="Auto-logout after 5 minutes of inactivity">Idle ' +
           formatTimer(remaining) +
           '</div>' +
           '<button type="button" class="btn-logout" data-action="logout">Log out</button>' +
@@ -1696,7 +1777,7 @@ button {
       '</div>' +
       '<form id="login-form" class="panel">' +
       '<h1 class="page-title" style="font-size:1.5rem">Clinician login</h1>' +
-      '<p class="page-desc" style="margin-top:0.5rem">Enter your medical license number to continue. Sessions expire after 5 minutes.</p>' +
+      '<p class="page-desc" style="margin-top:0.5rem">Enter your medical license number to continue. You are logged out after 5 minutes of inactivity.</p>' +
       '<label class="field">' +
       '<span class="field-label">License number</span>' +
       '<input id="license-input" type="text" inputmode="numeric" autocomplete="username" placeholder="e.g. 1847291 or 2847291" class="field-input" />' +
@@ -2183,6 +2264,12 @@ button {
         '<div><dt class="dl-label">Attached files</dt><dd style="margin-top:0.5rem">' +
         filesHtml +
         '</dd></div>' +
+        '<div><dt class="dl-label">Imaging preview</dt><dd style="margin-top:0.5rem">' +
+        '<figure class="imaging-preview">' +
+        '<img src="./chest-xray-demo.png" alt="Chest X-ray study preview" class="imaging-preview-img" />' +
+        '<figcaption class="imaging-preview-caption">Demo chest radiograph · PA view · for specialist review</figcaption>' +
+        '</figure>' +
+        '</dd></div>' +
         '</dl>' +
         (!rr.accepted
           ? '<button type="button" class="btn btn-primary mt-8" data-action="accept">Accept request</button>'
@@ -2329,7 +2416,10 @@ button {
   }
 
   state.user = parseStored();
-  if (state.user) startTicker();
+  if (state.user) {
+    startTicker();
+    startActivityTracking();
+  }
 
   window.addEventListener('hashchange', render);
 
